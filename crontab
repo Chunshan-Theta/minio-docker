@@ -1,0 +1,1 @@
+*/1 * * * * /usr/local/bin/check_and_set_quota.sh >> /var/log/cron.log 2>&1

@@ -1,0 +1,44 @@
+services:
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2023-12-20T01-00-02Z
+    container_name: ragflow-minio
+    command: server --console-address ":9001" /data
+    ports:
+      - ${MINIO_PORT}:9000
+      - ${MINIO_CONSOLE_PORT}:9001
+    environment:
+      - MINIO_ROOT_USER=${MINIO_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}
+      - TZ=${TIMEZONE}
+    volumes:
+      - minio_data:/data
+    networks:
+      - ragflow
+    restart: always
+  mc-cronjob:
+    build: .
+    volumes:
+      - ./cron.log:/var/log/cron.log
+      - ./check_and_set_quota.sh:/usr/local/bin/check_and_set_quota.sh
+      #- ./crontab:/etc/crontabs/root
+    environment:
+      MINIO_URL: "http://minio:9000"
+      ACCESS_KEY: "minio_usr"
+      SECRET_KEY: "minio_pws"
+      DEFAULT_QUOTA: "1GB"
+    depends_on:
+      - minio
+    networks:
+      - ragflow
+    restart: always
+
+
+volumes:
+  minio_data:
+    driver: local
+
+
+networks:
+  ragflow:
+    driver: bridge
