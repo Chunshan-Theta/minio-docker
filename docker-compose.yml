@@ -14,7 +14,7 @@ services:
     volumes:
       - minio_data:/data
     networks:
-      - ragflow
+      - ap
     restart: always
   mc-cronjob:
     build: .
@@ -30,7 +30,7 @@ services:
     depends_on:
       - minio
     networks:
-      - ragflow
+      - ap
     restart: always
 
 
@@ -40,5 +40,5 @@ volumes:
 
 
 networks:
-  ragflow:
+  ap:
     driver: bridge
